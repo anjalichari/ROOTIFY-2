@@ -1,0 +1,98 @@
+import { GoaLocation } from '../types';
+
+export const GOA_LOCATIONS: GoaLocation[] = [
+  {
+    id: 'panaji',
+    name: 'Panaji',
+    taluka: 'Tiswadi',
+    district: 'North Goa',
+    isServiceable: true,
+    estimatedDeliveryMin: 35,
+  },
+  {
+    id: 'mapusa',
+    name: 'Mapusa',
+    taluka: 'Bardez',
+    district: 'North Goa',
+    isServiceable: true,
+    estimatedDeliveryMin: 30,
+  },
+  {
+    id: 'porvorim',
+    name: 'Porvorim',
+    taluka: 'Bardez',
+    district: 'North Goa',
+    isServiceable: true,
+    estimatedDeliveryMin: 25,
+  },
+  {
+    id: 'calangute',
+    name: 'Calangute',
+    taluka: 'Bardez',
+    district: 'North Goa',
+    isServiceable: true,
+    estimatedDeliveryMin: 40,
+  },
+  {
+    id: 'candolim',
+    name: 'Candolim',
+    taluka: 'Bardez',
+    district: 'North Goa',
+    isServiceable: true,
+    estimatedDeliveryMin: 45,
+  },
+  {
+    id: 'margao',
+    name: 'Margao',
+    taluka: 'Salcete',
+    district: 'South Goa',
+    isServiceable: true,
+    estimatedDeliveryMin: 40,
+  },
+  {
+    id: 'ponda',
+    name: 'Ponda',
+    taluka: 'Ponda',
+    district: 'North Goa',
+    isServiceable: true,
+    estimatedDeliveryMin: 35,
+  },
+  {
+    id: 'vasco',
+    name: 'Vasco da Gama',
+    taluka: 'Mormugao',
+    district: 'South Goa',
+    isServiceable: true,
+    estimatedDeliveryMin: 50,
+  },
+  {
+    id: 'canacona',
+    name: 'Canacona',
+    taluka: 'Canacona',
+    district: 'South Goa',
+    isServiceable: true,
+    estimatedDeliveryMin: 65,
+  },
+  {
+    id: 'pernem',
+    name: 'Pernem',
+    taluka: 'Pernem',
+    district: 'North Goa',
+    isServiceable: false, // For testing unserviceable locations
+    estimatedDeliveryMin: 80,
+  },
+];
+
+export const TALUKAS = [
+  'Bardez',
+  'Tiswadi',
+  'Salcete',
+  'Ponda',
+  'Mormugao',
+  'Canacona',
+  'Pernem',
+  'Bicholim',
+  'Sattari',
+  'Quepem',
+  'Sanguem',
+];
