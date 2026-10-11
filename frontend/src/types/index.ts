@@ -281,3 +281,108 @@ export interface SettlementRecord {
   deliveredAt: string;
   settledAt?: string;
 }
+
+// Origin Passport & Product Traceability Types
+export type BatchStatus = 'draft' | 'pending' | 'active' | 'rejected' | 'revoked';
+export type VerificationStatus = 'unverified' | 'pending_review' | 'verified_with_evidence' | 'rejected' | 'revoked';
+
+export interface ProductBatch {
+  id: string;
+  batchCode: string; // Unique unpredictable identifier e.g. RTF-BEB-2026M01
+  productId: string;
+  productName: string;
+  vendorId: string;
+  vendorName: string;
+  batchNumber: string;
+  harvestDate: string;
+  productionDate: string;
+  bestBeforeDate?: string;
+  unitsProduced: number;
+  status: BatchStatus;
+  qrCodeUrl: string;
+  reviewedBy?: string;
+  reviewedAt?: string;
+  reviewNotes?: string;
+  revocationReason?: string;
+  scanCount: number;
+  createdAt: string;
+}
+
+export interface TraditionalMethodStep {
+  stepNumber: number;
+  title: string;
+  description: string;
+  duration?: string;
+}
+
+export interface IngredientSourcing {
+  ingredient: string;
+  sourceVillage: string;
+  sourceTaluka: string;
+  isLocalGoan: boolean;
+  harvestSeason?: string;
+}
+
+export interface ClaimReviewed {
+  claimType: 'GI_TAG' | 'FSSAI' | 'SHG_CERT' | 'TRADITIONAL_RECIPE' | 'PANCHAYAT_NOC' | 'ORGANIC_PRACTICE';
+  claimName: string;
+  certificateNumber?: string;
+  issuingAuthority?: string;
+  verified: boolean;
+  reviewDate?: string;
+  reviewerName?: string;
+  evidenceSummary: string;
+}
+
+export interface OriginPassport {
+  id: string;
+  batchId: string;
+  batchCode: string;
+  productId: string;
+  vendorId: string;
+  verificationStatus: VerificationStatus;
+  originVillage: string;
+  originTaluka: string;
+  originDistrict: 'North Goa' | 'South Goa';
+  traditionalMethodSteps: TraditionalMethodStep[];
+  ingredientsSourcing: IngredientSourcing[];
+  claimsReviewed: ClaimReviewed[];
+  independentTestingStatus?: string;
+  antiTamperDisclaimer: string;
+  publicNotes?: string;
+  createdAt: string;
+  updatedAt?: string;
+}
+
+export interface PassportMedia {
+  id: string;
+  ownerType: 'vendor' | 'batch' | 'product';
+  ownerId: string;
+  vendorId: string;
+  mediaType: 'image' | 'video';
+  category: 'profile' | 'farm_workspace' | 'making_process' | 'final_product' | 'artisan_interview';
+  url: string;
+  thumbnailUrl?: string;
+  caption: string;
+  description?: string;
+  altText: string;
+  moderationStatus: 'pending' | 'approved' | 'rejected';
+  reviewedBy?: string;
+  reviewedAt?: string;
+  isPublic: boolean;
+  createdAt: string;
+}
+
+export interface QRScanLog {
+  id: string;
+  qrType: 'vendor' | 'batch';
+  identifier: string;
+  scannedAt: string;
+  ipHash?: string;
+  deviceType?: string;
+  talukaDetected?: string;
+  scanSequenceNumber: number;
+  isFlaggedForReview: boolean;
+  flagReason?: string;
+}
+

@@ -6,6 +6,7 @@ import { INITIAL_ORDERS } from '../data/orders';
 import { INITIAL_REVIEWS } from '../data/reviews';
 import { INITIAL_MESSAGES, INITIAL_ISSUES, INITIAL_SETTLEMENTS } from '../data/messages';
 import { GOA_LOCATIONS } from '../data/locations';
+import { INITIAL_BATCHES, INITIAL_ORIGIN_PASSPORTS, INITIAL_PASSPORT_MEDIA } from '../data/passports';
 
 const KEYS = {
   USERS: 'rootify_users',
@@ -19,6 +20,10 @@ const KEYS = {
   SETTLEMENTS: 'rootify_settlements',
   SELECTED_LOCATION: 'rootify_selected_location',
   CART: 'rootify_cart',
+  BATCHES: 'rootify_batches',
+  PASSPORTS: 'rootify_passports',
+  MEDIA: 'rootify_media',
+  SCAN_LOGS: 'rootify_scan_logs',
 };
 
 // Initialize localStorage with initial synthetic data if not already present
@@ -49,6 +54,18 @@ export const initializeStorage = () => {
   }
   if (!localStorage.getItem(KEYS.SELECTED_LOCATION)) {
     localStorage.setItem(KEYS.SELECTED_LOCATION, JSON.stringify(GOA_LOCATIONS[0])); // Default Panaji
+  }
+  if (!localStorage.getItem(KEYS.BATCHES)) {
+    localStorage.setItem(KEYS.BATCHES, JSON.stringify(INITIAL_BATCHES));
+  }
+  if (!localStorage.getItem(KEYS.PASSPORTS)) {
+    localStorage.setItem(KEYS.PASSPORTS, JSON.stringify(INITIAL_ORIGIN_PASSPORTS));
+  }
+  if (!localStorage.getItem(KEYS.MEDIA)) {
+    localStorage.setItem(KEYS.MEDIA, JSON.stringify(INITIAL_PASSPORT_MEDIA));
+  }
+  if (!localStorage.getItem(KEYS.SCAN_LOGS)) {
+    localStorage.setItem(KEYS.SCAN_LOGS, JSON.stringify([]));
   }
 };
 

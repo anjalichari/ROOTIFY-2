@@ -21,7 +21,11 @@ import {
   ChevronRight,
   AlertTriangle,
   ArrowLeft,
+  QrCode,
+  ExternalLink,
 } from 'lucide-react';
+import { ProductBatch } from '../../types';
+import { passportService } from '../../services/passportService';
 
 export const ProductDetailPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -31,6 +35,7 @@ export const ProductDetailPage: React.FC = () => {
 
   const [product, setProduct] = useState<Product | null>(null);
   const [vendor, setVendor] = useState<Vendor | null>(null);
+  const [batch, setBatch] = useState<ProductBatch | null>(null);
   const [reviews, setReviews] = useState<Review[]>([]);
   const [selectedImage, setSelectedImage] = useState<string>('');
   const [quantity, setQuantity] = useState<number>(1);
@@ -49,6 +54,11 @@ export const ProductDetailPage: React.FC = () => {
           setVendor(vend);
           const revs = await reviewService.getReviewsByProduct(prod.id);
           setReviews(revs);
+
+          // Find associated batch
+          const allBatches = await passportService.getAllBatches();
+          const matchingBatch = allBatches.find((b) => b.productId === prod.id);
+          if (matchingBatch) setBatch(matchingBatch);
         }
       } catch (e) {
         console.error('Error loading product details:', e);
@@ -312,6 +322,39 @@ export const ProductDetailPage: React.FC = () => {
               Verified regional heritage, ingredients, and traditional preparation method
             </p>
           </div>
+        </div>
+
+        {/* Verifiable Origin Passport Feature Banner */}
+        <div className="p-4 sm:p-5 rounded-2xl bg-brand-50/80 border border-brand-200 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div className="flex items-start gap-3">
+            <div className="w-10 h-10 rounded-xl bg-brand-700 text-white flex items-center justify-center shrink-0 shadow-xs">
+              <QrCode className="w-5 h-5" />
+            </div>
+            <div>
+              <div className="flex items-center gap-2">
+                <span className="font-display font-bold text-sm text-brand-950">
+                  Verifiable Origin Passport & QR
+                </span>
+                <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 border border-emerald-300">
+                  {batch ? 'Audited Batch Active' : 'Verified Goan Producer'}
+                </span>
+              </div>
+              <p className="text-xs text-brand-800 mt-0.5">
+                {batch
+                  ? `Batch Code: ${batch.batchCode} • Produced: ${batch.productionDate} • ${batch.unitsProduced} units`
+                  : `Producer: ${product.vendorName} • Traceable artisanal village heritage`}
+              </p>
+            </div>
+          </div>
+
+          <Link
+            to={batch ? `/passport/batch/${batch.batchCode}` : `/passport/vendor/${product.vendorId}`}
+            className="inline-flex items-center gap-1.5 px-4 py-2.5 rounded-xl bg-brand-700 hover:bg-brand-800 text-white text-xs font-bold transition shadow-xs self-start sm:self-auto shrink-0"
+          >
+            <ShieldCheck className="w-4 h-4" />
+            <span>View Origin Passport</span>
+            <ExternalLink className="w-3.5 h-3.5 ml-0.5" />
+          </Link>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 text-xs">

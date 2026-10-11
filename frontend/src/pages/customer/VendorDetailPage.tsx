@@ -15,6 +15,7 @@ import {
   Phone,
   Mail,
   Store,
+  QrCode,
 } from 'lucide-react';
 
 export const VendorDetailPage: React.FC = () => {
@@ -112,10 +113,20 @@ export const VendorDetailPage: React.FC = () => {
             {/* Verified Badge & Score */}
             <div className="flex flex-wrap items-center gap-2">
               {vendor.status === 'approved' && (
-                <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-brand-50 border border-brand-200 text-brand-800 text-xs font-bold">
-                  <ShieldCheck className="w-4 h-4 text-brand-700" />
-                  Verified Vendor
-                </span>
+                <>
+                  <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-brand-50 border border-brand-200 text-brand-800 text-xs font-bold">
+                    <ShieldCheck className="w-4 h-4 text-brand-700" />
+                    Verified Vendor
+                  </span>
+                  <Link
+                    to={`/passport/vendor/${vendor.id}`}
+                    className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-sand-100 hover:bg-sand-200 border border-sand-300 text-charcoal-800 text-xs font-bold transition shadow-2xs"
+                    title="View Producer Origin QR Passport"
+                  >
+                    <QrCode className="w-4 h-4 text-brand-700" />
+                    <span>Producer QR Passport</span>
+                  </Link>
+                </>
               )}
               <div className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-amber-50 border border-amber-200 text-amber-900 text-xs font-bold">
                 <Star className="w-4 h-4 text-amber-500 fill-amber-500" />

@@ -15,6 +15,7 @@ import {
   LogOut,
   ArrowLeft,
   ShoppingBag,
+  QrCode,
 } from 'lucide-react';
 
 interface PortalLayoutProps {
@@ -43,6 +44,7 @@ export const PortalLayout: React.FC<PortalLayoutProps> = ({
   const vendorNavItems = [
     { to: '/vendor/dashboard', label: 'Dashboard', icon: <Store className="w-4 h-4" /> },
     { to: '/vendor/products', label: 'My Products', icon: <ShoppingBag className="w-4 h-4" /> },
+    { to: '/vendor/passports', label: 'My Story & QR Passports', icon: <QrCode className="w-4 h-4" /> },
     { to: '/vendor/orders', label: 'Incoming Orders', icon: <Package className="w-4 h-4" /> },
     { to: '/vendor/earnings', label: 'Earnings & Settlements', icon: <DollarSign className="w-4 h-4" /> },
     { to: '/vendor/profile', label: 'Producer Profile', icon: <UserIcon className="w-4 h-4" /> },
@@ -56,6 +58,7 @@ export const PortalLayout: React.FC<PortalLayoutProps> = ({
 
   const adminNavItems = [
     { to: '/admin/dashboard', label: 'Overview', icon: <BarChart3 className="w-4 h-4" /> },
+    { to: '/admin/passports', label: 'Origin Passports & Audits', icon: <QrCode className="w-4 h-4" /> },
     { to: '/admin/vendors', label: 'Vendor Approvals', icon: <Store className="w-4 h-4" /> },
     { to: '/admin/users', label: 'User Directory', icon: <Users className="w-4 h-4" /> },
     { to: '/admin/products', label: 'Catalog Moderation', icon: <ShoppingBag className="w-4 h-4" /> },

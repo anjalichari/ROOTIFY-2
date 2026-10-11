@@ -20,6 +20,7 @@ import { CheckoutPage } from './pages/customer/CheckoutPage';
 import { OrdersPage } from './pages/customer/OrdersPage';
 import { OrderDetailPage } from './pages/customer/OrderDetailPage';
 import { CustomerProfilePage } from './pages/customer/CustomerProfilePage';
+import { OriginPassportPage } from './pages/customer/OriginPassportPage';
 
 // Auth Pages
 import { LoginPage } from './pages/auth/LoginPage';
@@ -29,6 +30,7 @@ import { SignupPage } from './pages/auth/SignupPage';
 import { VendorRegisterPage } from './pages/vendor/VendorRegisterPage';
 import { VendorDashboardPage } from './pages/vendor/VendorDashboardPage';
 import { VendorProductsPage } from './pages/vendor/VendorProductsPage';
+import { VendorPassportsPage } from './pages/vendor/VendorPassportsPage';
 import { VendorOrdersPage } from './pages/vendor/VendorOrdersPage';
 import { VendorEarningsPage } from './pages/vendor/VendorEarningsPage';
 import { VendorProfilePage } from './pages/vendor/VendorProfilePage';
@@ -40,6 +42,7 @@ import { DeliveryProfilePage } from './pages/delivery/DeliveryProfilePage';
 
 // Admin Pages
 import { AdminDashboardPage } from './pages/admin/AdminDashboardPage';
+import { AdminPassportsPage } from './pages/admin/AdminPassportsPage';
 import { AdminVendorsPage } from './pages/admin/AdminVendorsPage';
 import { AdminUsersPage } from './pages/admin/AdminUsersPage';
 import { AdminProductsPage } from './pages/admin/AdminProductsPage';
@@ -50,6 +53,10 @@ import { AdminReportsPage } from './pages/admin/AdminReportsPage';
 
 // Common Fallback
 import { NotFoundPage } from './pages/common/NotFoundPage';
+
+// AI Assistant ChatBot
+import { ChatBot } from './chatbot';
+
 
 export const App: React.FC = () => {
   return (
@@ -154,6 +161,11 @@ export const App: React.FC = () => {
                     }
                   />
 
+                  {/* Public Origin Passport QR Scanner / Verification Views */}
+                  <Route path="/passport/batch/:code" element={<OriginPassportPage />} />
+                  <Route path="/passport/vendor/:id" element={<OriginPassportPage />} />
+                  <Route path="/passport/:code" element={<OriginPassportPage />} />
+
                   {/* Vendor Portal Views */}
                   <Route
                     path="/vendor/register"
@@ -185,6 +197,17 @@ export const App: React.FC = () => {
                         <div>
                           <RoleSwitcherBar />
                           <VendorProductsPage />
+                        </div>
+                      </ProtectedRoute>
+                    }
+                  />
+                  <Route
+                    path="/vendor/passports"
+                    element={
+                      <ProtectedRoute allowedRoles={['vendor', 'admin']}>
+                        <div>
+                          <RoleSwitcherBar />
+                          <VendorPassportsPage />
                         </div>
                       </ProtectedRoute>
                     }
@@ -283,6 +306,17 @@ export const App: React.FC = () => {
                     }
                   />
                   <Route
+                    path="/admin/passports"
+                    element={
+                      <ProtectedRoute allowedRoles={['admin']}>
+                        <div>
+                          <RoleSwitcherBar />
+                          <AdminPassportsPage />
+                        </div>
+                      </ProtectedRoute>
+                    }
+                  />
+                  <Route
                     path="/admin/vendors"
                     element={
                       <ProtectedRoute allowedRoles={['admin']}>
@@ -370,6 +404,8 @@ export const App: React.FC = () => {
                     }
                   />
                 </Routes>
+                {/* Global AI Chat Assistant */}
+                <ChatBot />
               </OrderProvider>
             </CartProvider>
           </LocationProvider>
