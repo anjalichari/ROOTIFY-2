@@ -1,13 +1,14 @@
 import React, { useState, useEffect } from 'react';
-import { useSearchParams } from 'react-router-dom';
+import { useSearchParams, Link } from 'react-router-dom';
 import { PortalLayout } from '../../components/portals/PortalLayout';
 import { useAuth } from '../../context/AuthContext';
 import { productService } from '../../services/productService';
 import { vendorService } from '../../services/vendorService';
 import { CATEGORIES } from '../../data/categories';
 import { TALUKAS } from '../../data/locations';
-import { Product, Vendor } from '../../types';
+import { Product, Vendor, TrustBadgeLevel } from '../../types';
 import { useToast } from '../../context/ToastContext';
+import { QRCodeModal } from '../../components/common/QRCodeModal';
 import {
   Plus,
   Edit2,
@@ -18,6 +19,10 @@ import {
   ShoppingBag,
   CheckCircle2,
   AlertCircle,
+  QrCode,
+  ExternalLink,
+  FileCheck2,
+  HelpCircle,
 } from 'lucide-react';
 
 export const VendorProductsPage: React.FC = () => {
@@ -33,6 +38,20 @@ export const VendorProductsPage: React.FC = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
 
+  // QR Modal State
+  const [qrModalData, setQrModalData] = useState<{
+    isOpen: boolean;
+    title: string;
+    subtitle: string;
+    destinationUrl: string;
+    badgeLabel?: string;
+  }>({
+    isOpen: false,
+    title: '',
+    subtitle: '',
+    destinationUrl: '',
+  });
+
   // Form Fields
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
@@ -46,10 +65,12 @@ export const VendorProductsPage: React.FC = () => {
   const [village, setVillage] = useState('Guirim');
   const [taluka, setTaluka] = useState('Bardez');
   const [traditionalMethod, setTraditionalMethod] = useState('');
+  const [stepsStr, setStepsStr] = useState('');
   const [ingredientsStr, setIngredientsStr] = useState('');
   const [certificationsStr, setCertificationsStr] = useState('FSSAI Registered, Verified Local Farm');
   const [shelfLife, setShelfLife] = useState('14 Days');
-  const [isVerifiedOrigin, setIsVerifiedOrigin] = useState(true);
+  const [storageTips, setStorageTips] = useState('');
+  const [trustBadge, setTrustBadge] = useState<TrustBadgeLevel>('Self-declared');
   const [isSaving, setIsSaving] = useState(false);
 
   const loadData = async () => {
@@ -95,10 +116,12 @@ export const VendorProductsPage: React.FC = () => {
     setInStock(true);
     setImageUrl('https://images.unsplash.com/photo-1589301760014-d929f3979dbc?auto=format&fit=crop&w=800&q=80');
     setTraditionalMethod('Slow baked layer-by-layer over coconut husk firewood ovens.');
+    setStepsStr('Extract first-press coconut milk\nWhisk egg yolks with ghee and nutmeg\nBake each layer over charcoal embers for 5 hours');
     setIngredientsStr('Fresh Coconut Milk, Palm Jaggery, Nutmeg, Cardamom, Pure Cow Ghee');
     setCertificationsStr('FSSAI Registered, Heritage Goan Baker Guild');
-    setShelfLife('14 Days');
-    setIsVerifiedOrigin(true);
+    setShelfLife('14 Days at room temperature');
+    setStorageTips('Store in an airtight container away from direct sunlight. Do not refrigerate.');
+    setTrustBadge('Self-declared');
     setIsModalOpen(true);
   };
 
@@ -116,10 +139,12 @@ export const VendorProductsPage: React.FC = () => {
     setVillage(p.originDetails.village);
     setTaluka(p.originDetails.taluka || p.vendorTaluka);
     setTraditionalMethod(p.originDetails.traditionalMethod);
+    setStepsStr(p.originDetails.steps?.join('\n') || p.originDetails.traditionalMethod || '');
     setIngredientsStr(p.originDetails.ingredients.join(', '));
     setCertificationsStr(p.originDetails.certifications.join(', '));
     setShelfLife(p.originDetails.shelfLife);
-    setIsVerifiedOrigin(p.isVerifiedOrigin);
+    setStorageTips(p.originDetails.storageTips || '');
+    setTrustBadge(p.trustBadge || (p.isVerifiedOrigin ? 'Verified' : 'Self-declared'));
     setIsModalOpen(true);
   };
 
@@ -147,6 +172,17 @@ export const VendorProductsPage: React.FC = () => {
       const catObj = CATEGORIES.find((c) => c.id === categoryId) || CATEGORIES[0];
       const ingredients = ingredientsStr.split(',').map((s) => s.trim()).filter(Boolean);
       const certifications = certificationsStr.split(',').map((s) => s.trim()).filter(Boolean);
+      const steps = stepsStr.split('\n').map((s) => s.replace(/^\d+[\.\)]\s*/, '').trim()).filter(Boolean);
+
+      // Security rule: Only an admin can set Verified, not the vendor.
+      const finalBadge: TrustBadgeLevel =
+        editingProduct?.trustBadge === 'Verified'
+          ? 'Verified'
+          : trustBadge === 'Evidence added'
+          ? 'Evidence added'
+          : 'Self-declared';
+
+      const isVerified = finalBadge === 'Verified';
 
       if (editingProduct) {
         await productService.updateProduct(editingProduct.id, {
@@ -160,14 +196,18 @@ export const VendorProductsPage: React.FC = () => {
           stockCount: Number(stockCount),
           inStock,
           images: [imageUrl || 'https://images.unsplash.com/photo-1589301760014-d929f3979dbc?auto=format&fit=crop&w=800&q=80'],
-          isVerifiedOrigin,
+          isVerifiedOrigin: isVerified,
+          trustBadge: finalBadge,
           originDetails: {
             village,
             taluka,
             traditionalMethod,
+            steps: steps.length > 0 ? steps : [traditionalMethod],
             ingredients,
             shelfLife,
+            storageTips,
             certifications,
+            storySnippet: editingProduct.originDetails.storySnippet || description,
           },
         });
         showToast('Product updated successfully!', 'success');
@@ -187,14 +227,18 @@ export const VendorProductsPage: React.FC = () => {
           stockCount: Number(stockCount),
           inStock,
           images: [imageUrl || 'https://images.unsplash.com/photo-1589301760014-d929f3979dbc?auto=format&fit=crop&w=800&q=80'],
-          isVerifiedOrigin,
+          isVerifiedOrigin: false,
+          trustBadge: finalBadge,
           originDetails: {
             village,
             taluka,
             traditionalMethod,
+            steps: steps.length > 0 ? steps : [traditionalMethod],
             ingredients,
             shelfLife,
+            storageTips,
             certifications,
+            storySnippet: description,
           },
         });
         showToast('New product added to catalog!', 'success');
@@ -296,17 +340,53 @@ export const VendorProductsPage: React.FC = () => {
                       </td>
 
                       <td className="py-3.5 px-4">
-                        {p.isVerifiedOrigin ? (
-                          <span className="inline-flex items-center gap-1 text-[11px] font-bold text-brand-800">
-                            <ShieldCheck className="w-3.5 h-3.5 text-brand-600" /> Verified
-                          </span>
-                        ) : (
-                          <span className="text-charcoal-400">Standard</span>
-                        )}
+                        <span
+                          className={`inline-flex items-center gap-1 text-[11px] font-bold px-2 py-0.5 rounded-full border ${
+                            p.trustBadge === 'Verified' || (!p.trustBadge && p.isVerifiedOrigin)
+                              ? 'bg-emerald-50 text-emerald-800 border-emerald-300'
+                              : p.trustBadge === 'Evidence added'
+                              ? 'bg-blue-50 text-blue-800 border-blue-300'
+                              : 'bg-amber-50 text-amber-800 border-amber-300'
+                          }`}
+                        >
+                          {p.trustBadge === 'Verified' || (!p.trustBadge && p.isVerifiedOrigin) ? (
+                            <ShieldCheck className="w-3 h-3 text-emerald-600" />
+                          ) : p.trustBadge === 'Evidence added' ? (
+                            <FileCheck2 className="w-3 h-3 text-blue-600" />
+                          ) : (
+                            <HelpCircle className="w-3 h-3 text-amber-600" />
+                          )}
+                          <span>{p.trustBadge || (p.isVerifiedOrigin ? 'Verified' : 'Self-declared')}</span>
+                        </span>
                       </td>
 
                       <td className="py-3.5 px-4 text-right">
-                        <div className="flex items-center justify-end gap-2">
+                        <div className="flex items-center justify-end gap-1.5">
+                          <button
+                            type="button"
+                            onClick={() =>
+                              setQrModalData({
+                                isOpen: true,
+                                title: `${p.name} Packaging Label`,
+                                subtitle: `Public Product Story QR (${p.trustBadge || 'Self-declared'})`,
+                                destinationUrl: `/p/${p.id}`,
+                                badgeLabel: p.trustBadge ? `Rootify ${p.trustBadge}` : 'Rootify Story QR',
+                              })
+                            }
+                            className="p-1.5 rounded-lg text-brand-700 hover:text-brand-900 hover:bg-brand-50 transition cursor-pointer"
+                            title="Get Product Story QR code for packaging stickers"
+                          >
+                            <QrCode className="w-4 h-4" />
+                          </button>
+                          <Link
+                            to={`/p/${p.id}`}
+                            target="_blank"
+                            rel="noreferrer"
+                            className="p-1.5 rounded-lg text-charcoal-400 hover:text-brand-700 hover:bg-sand-100 transition cursor-pointer"
+                            title="Preview public story page"
+                          >
+                            <ExternalLink className="w-4 h-4" />
+                          </Link>
                           <button
                             onClick={() => handleOpenEdit(p)}
                             className="p-1.5 rounded-lg text-charcoal-600 hover:text-brand-600 hover:bg-brand-50 transition cursor-pointer"
@@ -498,6 +578,17 @@ export const VendorProductsPage: React.FC = () => {
                   />
                 </div>
 
+                <div>
+                  <label className="font-semibold text-charcoal-700 block mb-1">Preparation Steps (one step per line)</label>
+                  <textarea
+                    rows={3}
+                    value={stepsStr}
+                    onChange={(e) => setStepsStr(e.target.value)}
+                    placeholder="Step 1: Extract coconut milk&#10;Step 2: Whisk with ghee&#10;Step 3: Slow bake each layer"
+                    className="w-full px-3 py-1.5 border border-sand-300 rounded-lg bg-white resize-none"
+                  ></textarea>
+                </div>
+
                 <div className="grid grid-cols-2 gap-3">
                   <div>
                     <label className="font-semibold text-charcoal-700 block mb-1">Shelf Life</label>
@@ -511,28 +602,64 @@ export const VendorProductsPage: React.FC = () => {
                   </div>
 
                   <div>
-                    <label className="font-semibold text-charcoal-700 block mb-1">Certifications / Badges</label>
+                    <label className="font-semibold text-charcoal-700 block mb-1">Storage Tips</label>
                     <input
                       type="text"
-                      value={certificationsStr}
-                      onChange={(e) => setCertificationsStr(e.target.value)}
-                      placeholder="FSSAI Registered, SHG Certified"
+                      value={storageTips}
+                      onChange={(e) => setStorageTips(e.target.value)}
+                      placeholder="e.g. Keep airtight at room temp"
                       className="w-full px-3 py-1.5 border border-sand-300 rounded-lg bg-white"
                     />
                   </div>
                 </div>
 
-                <div className="flex items-center gap-4 pt-1">
-                  <label className="flex items-center gap-2 font-bold text-charcoal-800 cursor-pointer">
-                    <input
-                      type="checkbox"
-                      checked={isVerifiedOrigin}
-                      onChange={(e) => setIsVerifiedOrigin(e.target.checked)}
-                      className="w-4 h-4 rounded text-brand-600 accent-brand-600"
-                    />
-                    <span>Verified Goan Origin</span>
-                  </label>
+                <div>
+                  <label className="font-semibold text-charcoal-700 block mb-1">Certifications & Badges (comma separated)</label>
+                  <input
+                    type="text"
+                    value={certificationsStr}
+                    onChange={(e) => setCertificationsStr(e.target.value)}
+                    placeholder="FSSAI Registered, SHG Certified"
+                    className="w-full px-3 py-1.5 border border-sand-300 rounded-lg bg-white"
+                  />
+                </div>
 
+                {/* Trust Badge Level (Vendor cannot set Verified) */}
+                <div className="p-3 bg-white rounded-xl border border-sand-300 space-y-1.5">
+                  <label className="font-bold text-charcoal-800 block text-[11px] uppercase tracking-wider">
+                    Origin Trust Badge
+                  </label>
+                  {editingProduct?.trustBadge === 'Verified' ? (
+                    <div className="flex items-center justify-between p-2 rounded-lg bg-emerald-50 border border-emerald-300 text-emerald-950 font-bold text-xs">
+                      <span className="flex items-center gap-1.5">
+                        <ShieldCheck className="w-4 h-4 text-emerald-600" />
+                        Verified by ROOTIFY Admin
+                      </span>
+                      <span className="text-[10px] bg-emerald-200 text-emerald-900 px-2 py-0.5 rounded-full uppercase">
+                        Admin Locked
+                      </span>
+                    </div>
+                  ) : (
+                    <div>
+                      <select
+                        value={trustBadge === 'Verified' ? 'Evidence added' : trustBadge}
+                        onChange={(e) => setTrustBadge(e.target.value as any)}
+                        className="w-full px-3 py-1.5 border border-sand-300 rounded-lg bg-white font-semibold text-xs"
+                      >
+                        <option value="Self-declared">Self-declared (Standard artisan declaration)</option>
+                        <option value="Evidence added">Evidence added (Certificates / trade license uploaded)</option>
+                        <option value="Verified" disabled>
+                          Verified (Admin Only — requires physical kitchen audit)
+                        </option>
+                      </select>
+                      <p className="text-[10px] text-charcoal-500 mt-1">
+                        * "Verified" status is reserved for ROOTIFY Admin after food inspection and document verification.
+                      </p>
+                    </div>
+                  )}
+                </div>
+
+                <div className="flex items-center gap-4 pt-1">
                   <label className="flex items-center gap-2 font-bold text-charcoal-800 cursor-pointer">
                     <input
                       type="checkbox"
@@ -567,6 +694,16 @@ export const VendorProductsPage: React.FC = () => {
           </div>
         </div>
       )}
+
+      {/* Product Story QR Modal */}
+      <QRCodeModal
+        isOpen={qrModalData.isOpen}
+        onClose={() => setQrModalData((prev) => ({ ...prev, isOpen: false }))}
+        title={qrModalData.title}
+        subtitle={qrModalData.subtitle}
+        destinationUrl={qrModalData.destinationUrl}
+        badgeLabel={qrModalData.badgeLabel}
+      />
 
     </PortalLayout>
   );

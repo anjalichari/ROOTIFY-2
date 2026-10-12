@@ -1,4 +1,4 @@
-import { Product } from '../types';
+import { Product, TrustBadgeLevel } from '../types';
 import { getStoredItem, setStoredItem, STORAGE_KEYS } from './storage';
 import { INITIAL_PRODUCTS } from '../data/products';
 
@@ -23,11 +23,33 @@ export interface IProductService {
   updateProduct(id: string, updates: Partial<Product>): Promise<Product>;
   deleteProduct(id: string): Promise<boolean>;
   updateModerationStatus(id: string, status: 'active' | 'needs_attention' | 'under_review'): Promise<Product>;
+  updateTrustBadge(id: string, trustBadge: TrustBadgeLevel): Promise<Product>;
 }
 
 class MockProductService implements IProductService {
   async getAllProducts(): Promise<Product[]> {
-    return getStoredItem<Product[]>(STORAGE_KEYS.PRODUCTS, INITIAL_PRODUCTS);
+    const stored = getStoredItem<Product[]>(STORAGE_KEYS.PRODUCTS, INITIAL_PRODUCTS);
+    return stored.map((p) => {
+      const initial = INITIAL_PRODUCTS.find((init) => init.id === p.id);
+      if (!initial) {
+        return {
+          ...p,
+          trustBadge: p.trustBadge || (p.isVerifiedOrigin ? 'Verified' : 'Self-declared'),
+        };
+      }
+      return {
+        ...initial,
+        ...p,
+        trustBadge: p.trustBadge || initial.trustBadge || (p.isVerifiedOrigin ? 'Verified' : 'Self-declared'),
+        originDetails: {
+          ...initial.originDetails,
+          ...p.originDetails,
+          steps: p.originDetails?.steps?.length ? p.originDetails.steps : initial.originDetails?.steps,
+          storageTips: p.originDetails?.storageTips || initial.originDetails?.storageTips,
+          storySnippet: p.originDetails?.storySnippet || initial.originDetails?.storySnippet,
+        },
+      };
+    });
   }
 
   async getProductById(id: string): Promise<Product | null> {
@@ -144,6 +166,13 @@ class MockProductService implements IProductService {
 
   async updateModerationStatus(id: string, status: 'active' | 'needs_attention' | 'under_review'): Promise<Product> {
     return this.updateProduct(id, { moderationStatus: status });
+  }
+
+  async updateTrustBadge(id: string, trustBadge: TrustBadgeLevel): Promise<Product> {
+    return this.updateProduct(id, {
+      trustBadge,
+      isVerifiedOrigin: trustBadge === 'Verified',
+    });
   }
 }
 

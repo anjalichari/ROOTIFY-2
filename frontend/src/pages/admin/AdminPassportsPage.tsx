@@ -407,8 +407,8 @@ export const AdminPassportsPage: React.FC = () => {
                                       isOpen: true,
                                       title: `${batch.productName} Packaging Label`,
                                       subtitle: `Batch: ${batch.batchCode} • ${batch.vendorName}`,
-                                      destinationUrl: batch.qrCodeUrl,
-                                      badgeLabel: 'Rootify Verified Batch',
+                                      destinationUrl: `/p/${batch.productId}`,
+                                      badgeLabel: 'Rootify Product Story QR',
                                       batchInfo: {
                                         batchNumber: batch.batchNumber,
                                         productName: batch.productName,

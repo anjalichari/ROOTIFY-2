@@ -53,6 +53,8 @@ export interface GoaLocation {
 }
 
 // Product Types
+export type TrustBadgeLevel = 'Self-declared' | 'Evidence added' | 'Verified';
+
 export interface Product {
   id: string;
   name: string;
@@ -72,6 +74,7 @@ export interface Product {
   rating: number;
   reviewCount: number;
   isVerifiedOrigin: boolean;
+  trustBadge?: TrustBadgeLevel;
   originDetails: {
     village: string;
     taluka: string;
@@ -80,6 +83,8 @@ export interface Product {
     shelfLife: string;
     certifications: string[]; // e.g. "FSSAI Registered", "SHG Certified", "Traditional Goan Recipe"
     storySnippet?: string;
+    storageTips?: string;
+    steps?: string[];
   };
   moderationStatus?: 'active' | 'needs_attention' | 'under_review';
   isPopular?: boolean;

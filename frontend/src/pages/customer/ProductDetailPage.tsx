@@ -347,14 +347,24 @@ export const ProductDetailPage: React.FC = () => {
             </div>
           </div>
 
-          <Link
-            to={batch ? `/passport/batch/${batch.batchCode}` : `/passport/vendor/${product.vendorId}`}
-            className="inline-flex items-center gap-1.5 px-4 py-2.5 rounded-xl bg-brand-700 hover:bg-brand-800 text-white text-xs font-bold transition shadow-xs self-start sm:self-auto shrink-0"
-          >
-            <ShieldCheck className="w-4 h-4" />
-            <span>View Origin Passport</span>
-            <ExternalLink className="w-3.5 h-3.5 ml-0.5" />
-          </Link>
+          <div className="flex items-center gap-2 self-start sm:self-auto shrink-0 flex-wrap">
+            <Link
+              to={`/p/${product.id}`}
+              className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-white hover:bg-sand-100 text-brand-800 border border-brand-300 text-xs font-bold transition shadow-2xs"
+            >
+              <Sparkles className="w-3.5 h-3.5 text-brand-600" />
+              <span>Product Story</span>
+            </Link>
+
+            <Link
+              to={batch ? `/passport/batch/${batch.batchCode}` : `/passport/vendor/${product.vendorId}`}
+              className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-brand-700 hover:bg-brand-800 text-white text-xs font-bold transition shadow-xs"
+            >
+              <ShieldCheck className="w-3.5 h-3.5" />
+              <span>Origin Passport</span>
+              <ExternalLink className="w-3 h-3 ml-0.5" />
+            </Link>
+          </div>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 text-xs">

@@ -224,8 +224,8 @@ export const VendorPassportsPage: React.FC = () => {
         isOpen: true,
         title: `${batch.productName} Packaging QR`,
         subtitle: `Batch ${batch.batchNumber} (Pending Admin Verification)`,
-        destinationUrl: batch.qrCodeUrl,
-        badgeLabel: 'Rootify Batch QR',
+        destinationUrl: `/p/${batch.productId}`,
+        badgeLabel: 'Rootify Product Story QR',
         batchInfo: {
           batchNumber: batch.batchNumber,
           productName: batch.productName,
@@ -545,8 +545,8 @@ export const VendorPassportsPage: React.FC = () => {
                               isOpen: true,
                               title: `${batch.productName} Packaging Label`,
                               subtitle: `Batch Code: ${batch.batchCode} • Units: ${batch.unitsProduced}`,
-                              destinationUrl: batch.qrCodeUrl,
-                              badgeLabel: 'Rootify Batch QR',
+                              destinationUrl: `/p/${batch.productId}`,
+                              badgeLabel: 'Rootify Product Story QR',
                               batchInfo: {
                                 batchNumber: batch.batchNumber,
                                 productName: batch.productName,

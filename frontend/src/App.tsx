@@ -21,6 +21,7 @@ import { OrdersPage } from './pages/customer/OrdersPage';
 import { OrderDetailPage } from './pages/customer/OrderDetailPage';
 import { CustomerProfilePage } from './pages/customer/CustomerProfilePage';
 import { OriginPassportPage } from './pages/customer/OriginPassportPage';
+import { ProductStoryPage } from './pages/customer/ProductStoryPage';
 
 // Auth Pages
 import { LoginPage } from './pages/auth/LoginPage';
@@ -161,7 +162,8 @@ export const App: React.FC = () => {
                     }
                   />
 
-                  {/* Public Origin Passport QR Scanner / Verification Views */}
+                  {/* Public Origin Passport & Product Story QR Views */}
+                  <Route path="/p/:productId" element={<ProductStoryPage />} />
                   <Route path="/passport/batch/:code" element={<OriginPassportPage />} />
                   <Route path="/passport/vendor/:id" element={<OriginPassportPage />} />
                   <Route path="/passport/:code" element={<OriginPassportPage />} />
