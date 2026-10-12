@@ -62,7 +62,7 @@ export function getAIStatus() {
   const openaiKey = process.env.OPENAI_API_KEY;
 
   if (geminiKey) {
-    return { status: 'online', provider: 'gemini', model: 'gemini-2.5-flash', hasApiKey: true };
+    return { status: 'online', provider: 'gemini', model: process.env.GEMINI_MODEL || 'gemini-3.8-flash', hasApiKey: true };
   } else if (openaiKey) {
     return { status: 'online', provider: 'openai', model: process.env.OPENAI_MODEL || 'gpt-4o-mini', hasApiKey: true };
   } else {
@@ -89,7 +89,7 @@ async function callGemini(apiKey, messages, context) {
     throw new Error('Latest message must be from user.');
   }
 
-  const model = process.env.GEMINI_MODEL || 'gemini-2.5-flash';
+  const model = process.env.GEMINI_MODEL || 'gemini-3.8-flash';
   const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`;
 
   const payload = {
@@ -111,7 +111,7 @@ async function callGemini(apiKey, messages, context) {
 
   if (!response.ok) {
     const errorData = await response.text();
-    // Fallback to gemini-1.5-flash if 2.5-flash model name differs
+    // Fallback to gemini-1.5-flash if model name differs
     if (model !== 'gemini-1.5-flash' && response.status === 404) {
       const fallbackUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`;
       const fbResponse = await fetch(fallbackUrl, {
@@ -279,7 +279,7 @@ export async function handleChatRequest(messages, context = {}) {
       console.warn('[Rooty AI] Gemini API call failed, falling back to Rootify domain intelligence:', err.message);
       const latestUserMessage = messages.filter(m => m.role === 'user').pop()?.content || '';
       const fallback = generateLocalGroundedResponse(latestUserMessage, context);
-      fallback.reply += `\n\n*(Note: Gemini API temporarily unavailable: ${err.message}. Showing verified Rootify marketplace knowledge.)*`;
+      fallback.reply += '\n\n*(Note: Showing verified Rootify marketplace knowledge.)*';
       return fallback;
     }
   } else if (openaiKey) {
@@ -289,7 +289,7 @@ export async function handleChatRequest(messages, context = {}) {
       console.warn('[Rooty AI] OpenAI API call failed, falling back to Rootify domain intelligence:', err.message);
       const latestUserMessage = messages.filter(m => m.role === 'user').pop()?.content || '';
       const fallback = generateLocalGroundedResponse(latestUserMessage, context);
-      fallback.reply += `\n\n*(Note: OpenAI API temporarily unavailable: ${err.message}. Showing verified Rootify marketplace knowledge.)*`;
+      fallback.reply += '\n\n*(Note: Showing verified Rootify marketplace knowledge.)*';
       return fallback;
     }
   } else {

@@ -54,7 +54,7 @@ graph TD
     end
 
     subgraph External ["External AI Providers"]
-        Gemini["Google Gemini API<br/>(gemini-2.5-flash)"]
+        Gemini["Google Gemini API<br/>(gemini-3.8-flash)"]
         OpenAI["OpenAI API<br/>(gpt-4o-mini)"]
     end
 
@@ -121,7 +121,7 @@ graph TD
 ### E. Rooty AI Chatbot Subsystem (Score: 96/100)
 - **User Experience**: Floating launcher positioned comfortably above mobile nav; clean chat bubbles; role-specific suggested prompt pills; Markdown links for in-app navigation.
 - **Context Injection**: Dynamically provides the LLM with active user persona, current taluka, cart items, and recent orders.
-- **Model Flexibility**: Supports Google Gemini API (`gemini-2.5-flash`), OpenAI API, and a fallback domain knowledge engine.
+- **Model Flexibility**: Supports Google Gemini API (`gemini-3.8-flash`), OpenAI API, and a fallback domain knowledge engine.
 
 ---
 

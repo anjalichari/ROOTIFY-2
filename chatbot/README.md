@@ -32,7 +32,7 @@ chatbot/
 - **Responsive Window**: Works on desktop (floating card) and mobile (bottom-sheet drawer).
 - **Domain-Grounded**: Deep knowledge of authentic Goan foods (Bebinca, Dodol, Choriz, Xacuti), Self-Help Groups (Divar Island Mahila Mandal), 12 Goa talukas, order tracking, and vendor onboarding.
 - **Context-Aware**: Injects active user role, current location, cart items, and live orders.
-- **Provider Support**: Google Gemini API (`gemini-2.5-flash`), OpenAI API, or built-in Goan domain knowledge fallback.
+- **Provider Support**: Google Gemini API (`gemini-3.8-flash`), OpenAI API, or built-in Goan domain knowledge fallback.
 - **Zero Secret Leaks**: API keys are accessed only on the server/middleware side.
 
 ---
@@ -42,7 +42,7 @@ chatbot/
 Copy `.env.example` to `.env` in `frontend/` or the project root:
 ```env
 GEMINI_API_KEY=your_gemini_api_key_here
-GEMINI_MODEL=gemini-2.5-flash
+GEMINI_MODEL=gemini-3.8-flash
 PORT=5000
 ```
 *(Get a free key from https://aistudio.google.com/app/apikey)*
